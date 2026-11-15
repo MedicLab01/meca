@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MECA | 의대생이 직접 가르치는 프리미엄 과외</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;800&display=swap">
+<style>
+:root{--bg:#F6F7F3;--surface:#FFFFFF;--ink:#14302E;--muted:#4F6663;--line:#CFD8D3;--accent:#1B7F68;--accent-ink:#FFFFFF;--stamp:#B3402D;
+--serif:"Noto Serif KR","Nanum Myeongjo","Batang",serif;--sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1B1A;--surface:#14282611;--ink:#E7EFEA;--muted:#9DB3AE;--line:#2A423F;--accent:#4CC3A3;--accent-ink:#06201B;--stamp:#E58A78;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1B1A;--surface:#14282611;--ink:#E7EFEA;--muted:#9DB3AE;--line:#2A423F;--accent:#4CC3A3;--accent-ink:#06201B;--stamp:#E58A78;color-scheme:dark}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.7 var(--sans);word-break:keep-all}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font:800 22px var(--serif);letter-spacing:.06em;text-decoration:none}
+nav{display:flex;gap:22px;align-items:center;font-size:15px}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--ink)}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);padding:12px 22px;border-radius:6px;font-weight:700;text-decoration:none}
+nav .btn{padding:8px 16px;color:var(--accent-ink)}
+.hero{padding:56px 0 72px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+h1{font:800 clamp(34px,5.2vw,56px)/1.25 var(--serif);margin:0 0 20px;letter-spacing:-.02em}
+.lead{color:var(--muted);font-size:18px;max-width:34em;margin:0 0 28px}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:26px 26px 22px;position:relative;box-shadow:6px 6px 0 var(--line)}
+.chart h2{font:700 13px var(--sans);color:var(--muted);margin:0 0 4px}
+.chart .title{font:800 22px var(--serif);margin:0 0 14px;padding-bottom:14px;border-bottom:2px solid var(--ink)}
+.chart dl{margin:0}
+.chart dt{font-weight:700;font-size:14px;color:var(--accent);margin-top:12px}
+.chart dd{margin:2px 0 0;font-size:15px}
+.stamp{position:absolute;right:18px;bottom:16px;border:2px solid var(--stamp);color:var(--stamp);font:800 14px var(--serif);padding:4px 10px;border-radius:4px;transform:rotate(-8deg)}
+section{padding:64px 0;border-top:1px solid var(--line)}
+h2.sec{font:800 clamp(26px,3.6vw,36px)/1.3 var(--serif);margin:0 0 32px;letter-spacing:-.01em}
+.reasons{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+.reasons article{padding:28px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.reasons article:nth-child(2n){border-right:0}
+.reasons article:nth-last-child(-n+2){border-bottom:0}
+.reasons h3{font:700 19px var(--serif);margin:0 0 8px}
+.reasons p{margin:0;color:var(--muted)}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.modes div{padding:26px;border:1px solid var(--line);border-left:5px solid var(--accent);background:var(--surface);border-radius:4px}
+.modes h3{font:700 19px var(--serif);margin:0 0 6px}
+.modes p{margin:0;color:var(--muted)}
+.cta{background:var(--ink);color:var(--bg);border-radius:8px;padding:48px 32px;text-align:center}
+.cta h2{font:800 clamp(24px,3.4vw,34px)/1.35 var(--serif);margin:0 0 10px}
+.cta p{margin:0 0 24px;opacity:.8}
+.cta .btn{background:var(--bg);color:var(--ink);font-size:20px;padding:14px 30px}
+.cta .ways{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.cta .way{border:1px solid var(--bg);border-radius:6px;padding:14px 26px;font-size:18px;color:var(--bg);text-decoration:none}
+.cta a.way{background:var(--bg);color:var(--ink);font-weight:700}
+footer{padding:32px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+@media (max-width:760px){
+.hero .wrap{grid-template-columns:1fr;gap:36px}
+.reasons,.modes{grid-template-columns:1fr}
+.reasons article{border-right:0}
+.reasons article:nth-last-child(-n+2){border-bottom:1px solid var(--line)}
+.reasons article:last-child{border-bottom:0}
+nav a:not(.btn){display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<a class="logo" href="#top" aria-label="MECA 홈">MECA</a>
+<nav aria-label="주요 메뉴">
+<a href="#why">MECA를 선택해야 하는 이유</a>
+<a href="#how">수업 방식</a>
+<a class="btn" href="#contact">상담 문의</a>
+</nav>
+</div>
+</header>
+
+<main id="top">
+<div class="hero">
+<div class="wrap">
+<div>
+<h1>의대생이 직접 가르치는<br>프리미엄 과외</h1>
+<p class="lead">학생에게 가장 필요한 것은 단순한 문제 풀이가 아니라 올바른 공부 방법과 학습 방향입니다. 실제 입시를 경험하고 의과대학에 진학한 재학생이 직접 지도합니다.</p>
+<a class="btn" href="#contact">카카오톡·이메일로 상담 문의</a>
+</div>
+<div class="chart" role="img" aria-label="학습 처방전 예시">
+<h2>MECA 학습 처방전</h2>
+<p class="title">의대생의 경험이 학생의 경쟁력이 됩니다</p>
+<dl>
+<dt>현재 수준</dt><dd>학생의 학습 수준과 목표를 먼저 확인합니다.</dd>
+<dt>과목별 공부법</dt><dd>과목마다 맞는 공부 방법을 지도합니다.</dd>
+<dt>시간 관리</dt><dd>효율적인 학습 계획을 함께 세웁니다.</dd>
+<dt>목표 설정</dt><dd>먼저 목표를 이룬 선배와 구체적인 목표를 정합니다.</dd>
+</dl>
+<div style="height:34px"></div>
+<span class="stamp">의대 재학생 지도</span>
+</div>
+</div>
+</div>
+
+<section id="why">
+<div class="wrap">
+<h2 class="sec">MECA를 선택해야 하는 이유</h2>
+<div class="reasons">
+<article><h3>의대 재학생의 직접 지도</h3><p>최근 입시를 경험한 의대생 선배들이 자신의 학습 경험과 노하우를 전달합니다.</p></article>
+<article><h3>실전 중심의 공부 전략</h3><p>단순한 문제 풀이를 넘어 과목별 공부 방법, 시간 관리, 효율적인 학습 전략을 지도합니다.</p></article>
+<article><h3>학생 맞춤형 과외</h3><p>학생의 현재 학습 수준과 목표를 고려하여 개인별 맞춤 학습을 지향합니다.</p></article>
+<article><h3>목표 달성을 위한 학습 동기부여</h3><p>먼저 목표를 이룬 선배와 공부하면서 구체적인 목표와 학습 의지를 키울 수 있습니다.</p></article>
+</div>
+</div>
+</section>
+
+<section id="how">
+<div class="wrap">
+<h2 class="sec">온라인·오프라인, 원하는 방식으로</h2>
+<div class="modes">
+<div><h3>온라인 과외</h3><p>어디서든 의대생 선배와 연결되어 수업을 들을 수 있습니다.</p></div>
+<div><h3>오프라인 과외</h3><p>직접 만나 학생의 학습 상태를 확인하며 지도합니다.</p></div>
+</div>
+</div>
+</section>
+
+<section id="contact">
+<div class="wrap">
+<div class="cta">
+<h2>의대생의 경험이 학생의 경쟁력이 됩니다</h2>
+<p>의과대학에 진학한 선배에게 직접 배워 보세요.</p>
+<div class="ways"><span class="way">카카오톡에서 <strong>jkkim8923</strong> 검색</span><a class="way" href="mailto:gebek8923@gmail.com">gebek8923@gmail.com</a></div>
+</div>
+</div>
+</section>
+</main>
+
+<footer>
+<div class="wrap">
+<span>Medic Lab · MECA, Medical Academy</span>
+<span>www.meca.kr · 카카오톡 jkkim8923 · gebek8923@gmail.com</span>
+</div>
+</footer>
+</body>
+</html>
