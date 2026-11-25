@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MECA 관리자</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--tx:#0f1b2d;--mu:#5d6b80;--bd:#e0e7f0;--pr:#1f6feb;--pr2:#e8f0fe;--ac:#0fb5a4;--navy:#0a1d38;--navy2:#123360;
+--ok:#16794c;--okb:#e0f5ea;--wa:#92600a;--wab:#fdf1d8;--er:#b42318;--erb:#fde7e4;--in:#1f5fc4;--inb:#e6efff;--no:#6b7280;--nob:#eceef1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.55 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+/* sidebar */
+.sb{background:var(--navy);color:#c9d6ea;padding:22px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.logo{font-weight:900;font-size:20px;letter-spacing:.06em;color:#fff;padding:0 10px 2px}.logo i{font-style:normal;color:var(--ac)}
+.logo small{display:block;font-size:11px;letter-spacing:.12em;color:#7f93b3;font-weight:700;margin-top:2px}
+.nv{margin-top:22px;display:flex;flex-direction:column;gap:2px}
+.nv button{display:flex;align-items:center;gap:10px;background:none;border:0;color:#c9d6ea;padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left;font-weight:500}
+.nv button:hover{background:rgba(255,255,255,.06)}
+.nv button.on{background:var(--navy2);color:#fff;font-weight:700}
+.nv .ct{margin-left:auto;background:var(--pr);color:#fff;font-size:11px;font-weight:700;border-radius:99px;padding:1px 7px}
+.nv .ct.z{display:none}
+.sbf{margin-top:auto;font-size:12px;color:#7f93b3;padding:10px}
+.sbf button{background:none;border:1px solid #2a4570;color:#9db0c8;border-radius:8px;padding:6px 10px;cursor:pointer;margin-top:8px;font-size:12px}
+/* main */
+.mn{min-width:0}
+.top{display:flex;align-items:center;gap:12px;padding:18px 28px;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5}
+.top h1{font-size:19px;margin:0;font-weight:900;letter-spacing:-.02em}
+.top .sp{flex:1}
+.top input{border:1.5px solid var(--bd);border-radius:10px;padding:8px 12px;width:240px;background:var(--bg)}
+.op{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mu)}
+.op select{border:1.5px solid var(--bd);border-radius:10px;padding:7px 10px;background:var(--card);font-weight:700;color:var(--tx)}
+.ct-w{padding:24px 28px 60px;max-width:1280px}
+.demo{background:var(--wab);color:var(--wa);font-size:12.5px;padding:8px 14px;border-radius:10px;margin-bottom:18px}
+/* blocks */
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.kp div{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px 18px;cursor:default}
+.kp div[data-a]{cursor:pointer}.kp div[data-a]:hover{border-color:var(--pr)}
+.kp b{display:block;font-size:24px;font-weight:900;letter-spacing:-.02em}.kp span{font-size:12.5px;color:var(--mu)}
+.g2{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+@media(max-width:1100px){.g2{grid-template-columns:1fr}}
+.cd{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px 20px;min-width:0}
+.cd h3{margin:0 0 12px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.cd h3 .mu{font-weight:400}
+.mu{color:var(--mu);font-size:12.5px}
+.todo{list-style:none;margin:0;padding:0}
+.todo li{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:1px solid var(--bd);cursor:pointer}
+.todo li:first-child{border-top:0}.todo li:hover{background:var(--bg)}
+.todo .k{font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;flex:none}
+.todo .t{flex:1;min-width:0}.todo .go{color:var(--mu)}
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.pipe div{background:var(--bg);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;border:1.5px solid transparent}
+.pipe div:hover{border-color:var(--pr)}
+.pipe b{display:block;font-size:22px;font-weight:900}.pipe span{font-size:11.5px;color:var(--mu);line-height:1.3;display:block}
+.pipe div.last{background:var(--okb)}.pipe div.last b{color:var(--ok)}
+/* filters / tables */
+.fl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.fl button{border:1px solid var(--bd);background:var(--card);color:var(--mu);border-radius:99px;padding:6px 14px;cursor:pointer;font-weight:500;font-size:13px}
+.fl button.on{background:var(--tx);border-color:var(--tx);color:#fff;font-weight:700}
+.fl .n{opacity:.7;margin-left:3px;font-size:12px}
+.fl .sp{flex:1}
+.tw{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:860px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{font-size:12px;color:var(--mu);font-weight:700;background:#fafbfd;white-space:nowrap}
+tbody tr{cursor:pointer}tbody tr:hover{background:#f8fafd}
+tbody tr:last-child td{border-bottom:0}
+td .sub{color:var(--mu);font-size:12px}
+.em{padding:40px;text-align:center;color:var(--mu)}
+.tg{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.ok{background:var(--okb);color:var(--ok)}.wa{background:var(--wab);color:var(--wa)}.er{background:var(--erb);color:var(--er)}.in{background:var(--inb);color:var(--in)}.no{background:var(--nob);color:var(--no)}
+.chp{display:inline-flex;gap:4px;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:2px 8px;font-size:12px;margin:2px 4px 2px 0;white-space:nowrap}
+.chp i{font-style:normal;width:7px;height:7px;border-radius:50%;display:inline-block}
+.dots{display:flex;gap:3px;align-items:center}
+.dots i{width:18px;height:6px;border-radius:3px;background:var(--bd)}
+.dots i.d{background:var(--ac)}.dots i.c{background:var(--pr)}
+.btn{border:1.5px solid var(--bd);background:var(--card);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--pr);color:var(--pr)}
+.btn.p{background:var(--pr);border-color:var(--pr);color:#fff}.btn.p:hover{color:#fff;filter:brightness(1.08)}
+.btn.r{color:var(--er)}.btn.r:hover{border-color:var(--er)}
+.btn.s{padding:5px 10px;font-size:12px;border-radius:8px}
+.xs{font-size:11px;background:#fff2c2;color:#6b4e00;border-radius:5px;padding:1px 6px;font-weight:700;white-space:nowrap}
+/* match board */
+.mb{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.mb .cd{padding:16px 18px}
+.mr{display:grid;grid-template-columns:92px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--bd);cursor:pointer}
+.mr:hover{background:var(--bg)}
+.mr .sj{font-weight:700}
+.mr .tn{min-width:0}
+.add{border:1.5px dashed var(--bd);border-radius:10px;padding:9px;text-align:center;color:var(--mu);cursor:pointer;margin-top:8px;font-size:13px;font-weight:700}
+.add:hover{border-color:var(--pr);color:var(--pr)}
+/* lessons */
+.dg{margin-bottom:16px}
+.dg h4{margin:0 0 8px;font-size:13px;color:var(--mu)}
+.dg h4.td{color:var(--pr)}
+.ls{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;margin-bottom:6px}
+.ls select{border:1.5px solid var(--bd);border-radius:8px;padding:5px 8px;background:var(--card)}
+/* drawer */
+#ov{position:fixed;inset:0;background:rgba(10,29,56,.35);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+#dr{position:fixed;top:0;right:0;bottom:0;width:min(540px,100vw);background:var(--card);z-index:21;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(10,29,56,.15)}
+body.do #ov{opacity:1;pointer-events:auto}body.do #dr{transform:none}
+.dh{padding:20px 22px 16px;border-bottom:1px solid var(--bd);display:flex;gap:12px;align-items:flex-start}
+.dh h2{margin:0;font-size:19px;font-weight:900;letter-spacing:-.02em}
+.dh .x{margin-left:auto;border:0;background:var(--bg);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:18px;flex:none}
+.db{padding:18px 22px 40px;overflow-y:auto;flex:1}
+.sec{margin-bottom:22px}
+.sec>h5{margin:0 0 10px;font-size:12px;letter-spacing:.06em;color:var(--mu);font-weight:700}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:13.5px}
+.kv dt{color:var(--mu)}.kv dd{margin:0}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr .w{grid-column:1/-1}
+.fd{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--mu);font-weight:700}
+.fd input,.fd select,.fd textarea,.db textarea.memo{border:1.5px solid var(--bd);border-radius:10px;padding:9px 11px;background:var(--card);font-weight:400;font-size:13.5px;color:var(--tx);width:100%}
+.fd input:focus,.fd select:focus,.fd textarea:focus,.db textarea:focus{outline:0;border-color:var(--pr);box-shadow:0 0 0 3px var(--pr2)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stp{display:flex;gap:0;margin:4px 0 16px}
+.stp div{flex:1;text-align:center;position:relative;font-size:11px;color:var(--mu);line-height:1.3}
+.stp div::before{content:attr(data-n);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;margin:0 auto 6px;background:var(--bg);border:2px solid var(--bd);font-weight:700;font-size:12px;position:relative;z-index:1}
+.stp div::after{content:"";position:absolute;top:13px;left:-50%;right:50%;height:2px;background:var(--bd)}
+.stp div:first-child::after{display:none}
+.stp div.d::before{background:var(--ac);border-color:var(--ac);color:#fff;content:"✓"}.stp div.d::after,.stp div.c::after{background:var(--ac)}
+.stp div.c::before{background:var(--pr);border-color:var(--pr);color:#fff}.stp div.c{color:var(--tx);font-weight:700}
+.box{background:var(--pr2);border:1px solid #c9dafc;border-radius:14px;padding:16px}
+.box.warn{background:var(--erb);border-color:#f7c8c2}
+.box p{margin:0 0 10px;font-size:13px}
+.fileln{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;font-size:13px}
+.fileln .mu{margin-left:auto}
+.pv{border:1px solid var(--bd);border-radius:14px;overflow:hidden;background:var(--card)}
+.pv .ph{aspect-ratio:16/7;background:linear-gradient(160deg,var(--pr2),var(--bg));display:grid;place-items:center;font-size:40px}
+.pv .pb{padding:14px}.pv h4{margin:0 0 2px;font-size:15px}
+.mini{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;cursor:pointer;font-size:13px}
+.mini:hover{border-color:var(--pr)}.mini .sp{flex:1;min-width:0}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--tx);color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;opacity:0;transition:.2s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:860px){
+ .app{grid-template-columns:1fr}
+ .sb{position:static;height:auto;flex-direction:row;align-items:center;gap:8px;padding:12px;overflow-x:auto}
+ .logo small,.sbf{display:none}.nv{flex-direction:row;margin:0}.nv button{white-space:nowrap;padding:8px 10px}
+ .top{flex-wrap:wrap;padding:14px 16px;position:static}.top input{width:100%;order:3}
+ .ct-w{padding:16px}.pipe{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside class="sb">
+  <div class="logo">ME<i>CA</i><small>ADMIN</small></div>
+  <nav class="nv" id="nv"></nav>
+  <div class="sbf">Medic Lab · MECA<br>관리자 시안 v1<br><button data-a="reset">시안 데이터 초기화</button></div>
+ </aside>
+ <main class="mn">
+  <div class="top">
+   <h1 id="ttl"></h1><div class="sp"></div>
+   <input id="q" type="search" placeholder="이름·연락처·과목 검색">
+   <label class="op">운영자 <select id="me"></select></label>
+  </div>
+  <div class="ct-w">
+   <div class="demo">시안입니다. 입력·변경한 내용은 이 브라우저에만 임시 저장됩니다. 오픈 시 상담 신청·선생님 지원서가 사이트에서 자동으로 들어옵니다.</div>
+   <div id="view"></div>
+  </div>
+ </main>
+</div>
+<div id="ov" data-a="close"></div>
+<aside id="dr"><div id="drb" style="display:contents"></div></aside>
+<div class="toast" id="toast"></div>
+
+<script>
+const OPS=["지훈","아빠","엄마"];
+const SUBJ=["국어","수학","영어","과학탐구","사회탐구","진학 멘토링","종합 상담"];
+const GRADES=["중1","중2","중3","고1","고2","고3","N수생"];
+const CS=["신규","연락 완료","매칭 진행","수업 중","보류","종료"];
+const TS=["재학증명서 확인","검증수업","계약","프로필 등록","공개 승인","공개 중"];
+const TSS=["재학인증","검증수업","계약","프로필","공개승인","공개"];
+const MS=["매칭 제안","시범과외 예정","시범과외 완료","정규수업","종료"];
+const LS=["예정","완료","결석","취소","보강"];
+const TODAY="2026-11-25";
+const NAV=[["dash","대시보드","📊"],["consult","상담 신청","📝"],["teacher","선생님 선발·관리","🩺"],["match","매칭","🔗"],["lesson","수업 일정","📅"],["pay","결제·정산","💳"]];
+
+const SEED={
+ teacher:[
+  {id:"t1",date:"2026-10-02",name:"김서연",phone:"010-3000-0001",univ:"서울대학교 의과대학",year:"본과 2학년",subjects:["수학","과학탐구"],stage:5,out:"",certFile:"재학증명서_김서연.pdf",demoDate:"2026-10-08T19:00",demoGrade:"상",demoNote:"개념 설명이 명확하고 질문 유도가 좋음",contractDate:"2026-10-12",contractFile:"계약서_김서연.pdf",pMode:"대면·비대면",pRegion:"서울 관악구·동작구",pTime:"평일 저녁, 토요일",pCareer:"수능 수학 1등급, 과외 경력 2년",pCurri:"개념 → 기출 분석 → 실전 모의 순환",pColumn:"수학 오답노트, 이렇게 쓰세요",memo:""},
+  {id:"t2",date:"2026-10-03",name:"박민준",phone:"010-3000-0002",univ:"연세대학교 의과대학",year:"예과 2학년",subjects:["영어","국어"],stage:5,out:"",certFile:"재학증명서_박민준.pdf",demoDate:"2026-10-09T20:00",demoGrade:"상",demoNote:"구문 분석 수업 체계적",contractDate:"2026-10-13",contractFile:"계약서_박민준.pdf",pMode:"대면·비대면",pRegion:"서울 서대문구·마포구",pTime:"주말 오후",pCareer:"수능 영어·국어 1등급",pCurri:"구문 → 유형별 독해 → 실전",pColumn:"",memo:""},
+  {id:"t3",date:"2026-10-10",name:"이도현",phone:"010-3000-0003",univ:"가톨릭대학교 의과대학",year:"본과 1학년",subjects:["과학탐구"],stage:5,out:"",certFile:"재학증명서_이도현.pdf",demoDate:"2026-10-16T19:30",demoGrade:"중",demoNote:"내용은 좋으나 속도 조절 필요",contractDate:"2026-10-20",contractFile:"계약서_이도현.pdf",pMode:"비대면",pRegion:"",pTime:"평일 저녁",pCareer:"생명과학Ⅰ·화학Ⅰ 1등급",pCurri:"개념 압축 → 고난도 킬러 문항",pColumn:"",memo:""},
+  {id:"t4",date:"2026-11-02",name:"최유나",phone:"010-3000-0004",univ:"경북대학교 의과대학",year:"본과 3학년",subjects:["수학"],stage:4,out:"",certFile:"재학증명서_최유나.pdf",demoDate:"2026-11-09T19:00",demoGrade:"상",demoNote:"대구 지역 대면 가능",contractDate:"2026-11-14",contractFile:"계약서_최유나.pdf",pMode:"대면·비대면",pRegion:"대구 수성구·중구",pTime:"평일 저녁, 일요일",pCareer:"수학 과외 경력 3년",pCurri:"학생 수준별 3단계 커리큘럼",pColumn:"고2 겨울방학 수학 로드맵",memo:"프로필 제출 11/23"},
+  {id:"t5",date:"2026-11-10",name:"정우진",phone:"010-3000-0005",univ:"전남대학교 의과대학",year:"예과 1학년",subjects:["국어","진학 멘토링"],stage:2,out:"",certFile:"재학증명서_정우진.pdf",demoDate:"2026-11-20T20:00",demoGrade:"상",demoNote:"멘토링 역량 우수",contractDate:"",contractFile:"",pMode:"",pRegion:"",pTime:"",pCareer:"",pCurri:"",pColumn:"",memo:""},
+  {id:"t6",date:"2026-11-18",name:"한지민",phone:"010-3000-0006",univ:"부산대학교 의과대학",year:"본과 2학년",subjects:["수학","영어"],stage:1,out:"",certFile:"재학증명서_한지민.pdf",demoDate:"2026-11-27T19:00",demoGrade:"",demoNote:"",contractDate:"",contractFile:"",pMode:"",pRegion:"",pTime:"",pCareer:"",pCurri:"",pColumn:"",memo:""},
+  {id:"t7",date:"2026-11-24",name:"윤태호",phone:"010-3000-0007",univ:"충남대학교 의과대학",year:"예과 2학년",subjects:["과학탐구"],stage:0,out:"",certFile:"재학증명서_윤태호.jpg",demoDate:"",demoGrade:"",demoNote:"",contractDate:"",contractFile:"",pMode:"",pRegion:"",pTime:"",pCareer:"",pCurri:"",pColumn:"",memo:""},
+  {id:"t8",date:"2026-11-12",name:"강민서",phone:"010-3000-0008",univ:"○○대학교 의과대학",year:"예과 1학년",subjects:["영어"],stage:0,out:"보류",certFile:"재학증명서_강민서.png",demoDate:"",demoGrade:"",demoNote:"",contractDate:"",contractFile:"",pMode:"",pRegion:"",pTime:"",pCareer:"",pCurri:"",pColumn:"",memo:"재학증명서 발급일이 오래됨 — 재제출 요청"}
+ ],
+ consult:[
+  {id:"c1",date:"2026-10-24",parent:"최현아",phone:"010-2222-0001",student:"최지우",grade:"고3",subjects:["수학","과학탐구"],mode:["비대면"],region:"",times:"월·수 저녁 (18–22시)",score:"6월 모평 수학 3등급",goal:"의예과 진학",source:"지인 소개",req:"",status:"수업 중",owner:"지훈",memo:"과탐은 생명과학Ⅰ"},
+  {id:"c2",date:"2026-10-17",parent:"정미경",phone:"010-2222-0002",student:"정도윤",grade:"N수생",subjects:["영어"],mode:["대면"],region:"서울 서대문구",times:"화·금 오후 (12–18시)",score:"영어 3등급",goal:"치의예과",source:"블로그·검색",req:"",status:"수업 중",owner:"엄마",memo:""},
+  {id:"c3",date:"2026-11-19",parent:"한경수",phone:"010-2222-0003",student:"한소미",grade:"고2",subjects:["수학"],mode:["대면","비대면"],region:"대구 수성구",times:"토·일 오전",score:"수학 2등급",goal:"의예과",source:"인스타그램",req:"주말 수업 희망",status:"매칭 진행",owner:"아빠",memo:"대구 대면 가능 선생님 우선"},
+  {id:"c4",date:"2026-11-21",parent:"서은주",phone:"010-2222-0004",student:"서하준",grade:"고1",subjects:["국어","진학 멘토링"],mode:["비대면"],region:"",times:"목 저녁 (18–22시)",score:"",goal:"의대 진학 로드맵",source:"유튜브",req:"고1 겨울방학 계획 상담",status:"연락 완료",owner:"엄마",memo:"11/22 통화 — 국어 선생님 계약 후 매칭 예정"},
+  {id:"c5",date:"2026-11-25",parent:"문지혜",phone:"010-2222-0005",student:"문채원",grade:"고3",subjects:["수학"],mode:["비대면"],region:"",times:"평일 저녁 (18–22시)",score:"9월 모평 수학 2등급",goal:"수능 1등급",source:"지인 소개",req:"",status:"신규",owner:"",memo:""},
+  {id:"c6",date:"2026-11-24",parent:"임성호",phone:"010-2222-0006",student:"임재윤",grade:"N수생",subjects:["과학탐구"],mode:["대면","비대면"],region:"경기 성남시",times:"시간 협의",score:"화학Ⅰ 3등급",goal:"의예과",source:"블로그·검색",req:"화학Ⅰ 집중",status:"신규",owner:"",memo:""}
+ ],
+ match:[
+  {id:"m1",cid:"c1",subject:"수학",tid:"t1",status:"정규수업",trial:"2026-10-27T19:00",fee:480000,sessions:8,memo:""},
+  {id:"m2",cid:"c1",subject:"과학탐구",tid:"t3",status:"시범과외 예정",trial:"2026-11-27T20:00",fee:400000,sessions:8,memo:"생명과학Ⅰ"},
+  {id:"m3",cid:"c2",subject:"영어",tid:"t2",status:"정규수업",trial:"2026-10-20T16:00",fee:360000,sessions:4,memo:""},
+  {id:"m4",cid:"c3",subject:"수학",tid:"t1",status:"매칭 제안",trial:"",fee:480000,sessions:8,memo:"최유나 선생님 공개 승인 후 대면 매칭도 검토"}
+ ],
+ lesson:[
+  {id:"l1",mid:"m1",date:"2026-11-23",time:"19:00",status:"완료",memo:""},
+  {id:"l2",mid:"m1",date:"2026-11-25",time:"19:00",status:"예정",memo:""},
+  {id:"l3",mid:"m3",date:"2026-11-21",time:"16:00",status:"결석",memo:"학생 감기"},
+  {id:"l4",mid:"m3",date:"2026-11-24",time:"16:00",status:"보강",memo:"11/21 결석분"},
+  {id:"l5",mid:"m3",date:"2026-11-28",time:"16:00",status:"예정",memo:""},
+  {id:"l6",mid:"m2",date:"2026-11-27",time:"20:00",status:"예정",memo:"시범과외"},
+  {id:"l7",mid:"m1",date:"2026-11-30",time:"19:00",status:"예정",memo:""}
+ ],
+ pay:[
+  {id:"p1",mid:"m1",round:1,from:"2026-10-28",to:"2026-11-24",amount:480000,status:"결제완료",paidDate:"2026-10-27",settleAmt:384000,settle:"완료"},
+  {id:"p2",mid:"m1",round:2,from:"2026-11-25",to:"2026-12-22",amount:480000,status:"미결제",paidDate:"",settleAmt:384000,settle:"대기"},
+  {id:"p3",mid:"m3",round:1,from:"2026-10-21",to:"2026-11-17",amount:360000,status:"결제완료",paidDate:"2026-10-20",settleAmt:288000,settle:"완료"},
+  {id:"p4",mid:"m3",round:2,from:"2026-11-18",to:"2026-12-15",amount:360000,status:"결제완료",paidDate:"2026-11-18",settleAmt:288000,settle:"대기"}
+ ]
+};
+const KEY="meca-admin-v3";
+let db, view="dash", cur=null, flt={consult:"all",teacher:"all",match:"all",lesson:"week",pay:"all"}, me="지훈";
+function load(){try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){db=null}if(!db||!db.teacher)db=JSON.parse(JSON.stringify(SEED));try{me=localStorage.getItem(KEY+"-me")||"지훈"}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+load();
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const won=n=>(Number(n)||0).toLocaleString("ko-KR")+"원";
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const md=d=>d?(+d.slice(5,7))+"/"+(+d.slice(8,10)):"-";
+const dt=d=>d?md(d.slice(0,10))+(d.length>10?" "+d.slice(11,16):""):"-";
+function addDays(d,n){const x=new Date(d+"T00:00:00");x.setDate(x.getDate()+n);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+const WD=["일","월","화","수","목","금","토"];
+const wd=d=>WD[new Date(d+"T00:00:00").getDay()];
+const T=id=>db.teacher.find(x=>x.id===id), C=id=>db.consult.find(x=>x.id===id), M=id=>db.match.find(x=>x.id===id);
+const tLabel=t=>t.out?t.out:(t.stage>=5?"공개 중":TS[t.stage]+" 대기");
+function tone(s){
+ if(["수업 중","공개 중","정규수업","완료","결제완료"].includes(s))return"ok";
+ if(["신규","재학증명서 확인 대기","공개 승인 대기","시범과외 예정","매칭 제안","미결제","대기","예정"].includes(s))return"wa";
+ if(["결석","탈락","반려"].includes(s))return"er";
+ if(["연락 완료","매칭 진행","검증수업 대기","계약 대기","프로필 등록 대기","시범과외 완료","보강"].includes(s))return"in";
+ return"no";
+}
+const tg=(s,lbl)=>`<span class="tg ${tone(s)}">${esc(lbl||s)}</span>`;
+const SC={"수학":"#1f6feb","국어":"#e5484d","영어":"#0fb5a4","과학탐구":"#8e4ec6","사회탐구":"#f5a524","진학 멘토링":"#12a150","종합 상담":"#6b7280"};
+const chip=(s,extra)=>`<span class="chp"><i style="background:${SC[s]||"#999"}"></i>${esc(s)}${extra?` · ${esc(extra)}`:""}</span>`;
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("on"),1800)}
+const q=()=>$("#q").value.trim().toLowerCase();
+const hit=(...xs)=>{const s=q();return!s||xs.join(" ").toLowerCase().includes(s)};
+const matchesOf=cid=>db.match.filter(m=>m.cid===cid);
+const activeM=m=>m.status!=="종료";
+
+/* ---------- todo list ---------- */
+function todos(){
+ const a=[];
+ db.consult.filter(c=>c.status==="신규").forEach(c=>a.push(["상담","wa",`<b>${esc(c.student)}</b> (${esc(c.grade)}) 학부모 연락 — ${esc(c.subjects.join(", "))}`,"consult",c.id,c.date]));
+ db.teacher.filter(t=>!t.out&&t.stage<5).forEach(t=>{
+  const msg=["재학증명서 확인","검증수업 진행·결과 기록","계약 체결","상세 프로필 등록 안내","프로필 검토 후 공개 승인"][t.stage];
+  a.push(["선생님",t.stage===4||t.stage===0?"wa":"in",`<b>${esc(t.name)}</b> — ${msg}${t.stage===1&&t.demoDate?` <span class="mu">(${dt(t.demoDate)})</span>`:""}`,"teacher",t.id,t.date]);
+ });
+ db.consult.filter(c=>["연락 완료","매칭 진행"].includes(c.status)).forEach(c=>{
+  const covered=matchesOf(c.id).filter(activeM).map(m=>m.subject);
+  const miss=c.subjects.filter(s=>!covered.includes(s));
+  if(miss.length)a.push(["매칭","in",`<b>${esc(c.student)}</b> — ${esc(miss.join(", "))} 선생님 매칭 필요`,"consult",c.id,c.date]);
+ });
+ db.match.forEach(m=>{const c=C(m.cid),t=T(m.tid);
+  if(m.status==="매칭 제안")a.push(["매칭","wa",`<b>${esc(c.student)}</b> ${esc(m.subject)} — 시범과외 일정 확정`,"match",m.id,""]);
+  if(m.status==="시범과외 예정")a.push(["시범","in",`<b>${esc(c.student)}</b> ${esc(m.subject)} 시범과외 ${dt(m.trial)} · ${esc(t?t.name:"")} 선생님`,"match",m.id,m.trial]);
+  if(m.status==="시범과외 완료")a.push(["매칭","wa",`<b>${esc(c.student)}</b> ${esc(m.subject)} — 정규 전환 / 재매칭 결정`,"match",m.id,""]);
+ });
+ db.pay.forEach(p=>{const m=M(p.mid);if(!m)return;const c=C(m.cid),t=T(m.tid);
+  if(p.status==="미결제")a.push(["결제","er",`<b>${esc(c.student)}</b> ${esc(m.subject)} ${p.round}회차 결제 확인 — ${won(p.amount)}`,"pay",p.id,p.from]);
+  else if(p.settle==="대기")a.push(["정산","in",`<b>${esc(t?t.name:"")}</b> 선생님 정산 — ${esc(c.student)} ${esc(m.subject)} ${p.round}회차 ${won(p.settleAmt)}`,"pay",p.id,p.paidDate]);
+ });
+ return a;
+}
+
+/* ---------- views ---------- */
+function vDash(){
+ const newC=db.consult.filter(c=>c.status==="신규").length;
+ const inSel=db.teacher.filter(t=>!t.out&&t.stage<5).length;
+ const pub=db.teacher.filter(t=>!t.out&&t.stage>=5).length;
+ const trial=db.match.filter(m=>m.status==="시범과외 예정").length;
+ const reg=db.match.filter(m=>m.status==="정규수업").length;
+ const unpaid=db.pay.filter(p=>p.status==="미결제").reduce((s,p)=>s+p.amount,0);
+ const td=todos();
+ let h=`<div class="kp">
+  <div data-a="go" data-v="consult" data-f="신규"><b>${newC}</b><span>신규 상담 신청</span></div>
+  <div data-a="go" data-v="teacher" data-f="sel"><b>${inSel}</b><span>선발 진행 중 지원자</span></div>
+  <div data-a="go" data-v="teacher" data-f="5"><b>${pub}</b><span>공개 중 선생님</span></div>
+  <div data-a="go" data-v="match" data-f="시범과외 예정"><b>${trial}</b><span>시범과외 예정</span></div>
+  <div data-a="go" data-v="match" data-f="정규수업"><b>${reg}</b><span>정규수업 중 매칭</span></div>
+  <div data-a="go" data-v="pay" data-f="미결제"><b>${won(unpaid)}</b><span>미결제 금액</span></div>
+ </div>
+ <div class="g2">
+  <div class="cd"><h3>오늘 할 일 <span class="mu">${td.length}건</span></h3><ul class="todo">${td.length?td.map(x=>`<li data-a="open" data-k="${x[3]}" data-id="${x[4]}"><span class="k ${x[1]}">${x[0]}</span><span class="t">${x[2]}</span><span class="go">›</span></li>`).join(""):`<li class="em">처리할 일이 없습니다.</li>`}</ul></div>
+  <div style="display:grid;gap:16px;align-content:start">
+   <div class="cd"><h3>선생님 선발 파이프라인</h3><div class="pipe">${TS.map((s,i)=>{const n=db.teacher.filter(t=>!t.out&&t.stage===i).length;return`<div class="${i===5?"last":""}" data-a="go" data-v="teacher" data-f="${i}"><b>${n}</b><span>${i===5?"공개 중":TSS[i]+"<br>대기"}</span></div>`}).join("")}</div>
+    <p class="mu" style="margin:12px 0 0">지원 → 재학증명서 인증 → 검증수업 → 계약 → 상세 프로필 → 운영자 승인 후 사이트 노출</p></div>
+   <div class="cd"><h3>최근 상담 신청</h3>${db.consult.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5).map(c=>`<div class="mini" data-a="open" data-k="consult" data-id="${c.id}"><span class="mu">${md(c.date)}</span><span class="sp"><b>${esc(c.student)}</b> ${esc(c.grade)} · ${esc(c.subjects.join(", "))}</span>${tg(c.status)}</div>`).join("")}</div>
+  </div>
+ </div>`;
+ return h;
+}
+
+function fbar(key,opts){return`<div class="fl">${opts.map(([v,l,n])=>`<button class="${String(flt[key])===String(v)?"on":""}" data-a="flt" data-key="${key}" data-f="${v}">${l}${n!=null?`<span class="n">${n}</span>`:""}</button>`).join("")}<span class="sp"></span>${key==="consult"?`<button class="btn p" data-a="newConsult">+ 상담 직접 등록</button>`:""}${key==="teacher"?`<button class="btn p" data-a="newTeacher">+ 지원자 직접 등록</button>`:""}</div>`}
+
+function vConsult(){
+ const f=flt.consult;
+ const rows=db.consult.filter(c=>(f==="all"||c.status===f)&&hit(c.student,c.parent,c.phone,c.subjects.join(" "),c.region)).sort((a,b)=>b.date.localeCompare(a.date));
+ return fbar("consult",[["all","전체",db.consult.length]].concat(CS.map(s=>[s,s,db.consult.filter(c=>c.status===s).length])))+
+ `<div class="tw"><table><thead><tr><th>접수일</th><th>학생</th><th>학부모 · 연락처</th><th>희망 과목</th><th>수업 형태</th><th>과목별 매칭 현황</th><th>담당</th><th>상태</th></tr></thead><tbody>${rows.length?rows.map(c=>{
+  const ms=matchesOf(c.id).filter(activeM);
+  return`<tr data-a="open" data-k="consult" data-id="${c.id}"><td>${md(c.date)}</td><td><b>${esc(c.student)}</b><div class="sub">${esc(c.grade)}</div></td><td>${esc(c.parent)}<div class="sub">${esc(c.phone)}</div></td><td>${c.subjects.map(s=>chip(s)).join("")}</td><td>${esc(c.mode.join("·"))}${c.region?`<div class="sub">${esc(c.region)}</div>`:""}</td><td>${ms.length?ms.map(m=>{const t=T(m.tid);return chip(m.subject,(t?t.name:"미정")+" "+m.status)}).join("<br>"):'<span class="sub">-</span>'}</td><td>${c.owner?esc(c.owner):'<span class="sub">미배정</span>'}</td><td>${tg(c.status)}</td></tr>`}).join(""):`<tr><td colspan="8" class="em">해당하는 상담 신청이 없습니다.</td></tr>`}</tbody></table></div>`;
+}
+
+function vTeacher(){
+ const f=flt.teacher;
+ const ok=t=>f==="all"?true:f==="sel"?(!t.out&&t.stage<5):f==="out"?!!t.out:(!t.out&&t.stage===+f);
+ const rows=db.teacher.filter(t=>ok(t)&&hit(t.name,t.univ,t.phone,t.subjects.join(" "))).sort((a,b)=>b.date.localeCompare(a.date));
+ const opts=[["all","전체",db.teacher.length]].concat(TS.map((s,i)=>[i,i===5?"공개 중":s,db.teacher.filter(t=>!t.out&&t.stage===i).length]),[["out","보류·탈락",db.teacher.filter(t=>t.out).length]]);
+ return fbar("teacher",opts)+`<div class="tw"><table><thead><tr><th>지원일</th><th>이름</th><th>대학 · 학년</th><th>과목</th><th>선발 진행</th><th>현재 상태</th><th>담당 학생</th></tr></thead><tbody>${rows.length?rows.map(t=>{
+  const n=db.match.filter(m=>m.tid===t.id&&activeM(m)).length;
+  return`<tr data-a="open" data-k="teacher" data-id="${t.id}"><td>${md(t.date)}</td><td><b>${esc(t.name)}</b><div class="sub">${esc(t.phone)}</div></td><td>${esc(t.univ)}<div class="sub">${esc(t.year)}</div></td><td>${t.subjects.map(s=>chip(s)).join("")}</td><td><div class="dots">${TS.map((s,i)=>`<i class="${i<t.stage||t.stage===5?"d":i===t.stage?"c":""}" title="${s}"></i>`).join("")}</div></td><td>${tg(tLabel(t))}</td><td>${t.stage>=5?n+"명":'<span class="sub">-</span>'}</td></tr>`}).join(""):`<tr><td colspan="7" class="em">해당하는 선생님이 없습니다.</td></tr>`}</tbody></table></div>`;
+}
+
+function vMatch(){
+ const f=flt.match;
+ const cs=db.consult.filter(c=>matchesOf(c.id).length||["연락 완료","매칭 진행"].includes(c.status)).filter(c=>hit(c.student,c.parent,c.subjects.join(" "),matchesOf(c.id).map(m=>(T(m.tid)||{}).name).join(" ")));
+ const opts=[["all","전체",db.match.length]].concat(MS.map(s=>[s,s,db.match.filter(m=>m.status===s).length]));
+ const list=cs.map(c=>{
+  let ms=matchesOf(c.id);if(f!=="all")ms=ms.filter(m=>m.status===f);
+  if(f!=="all"&&!ms.length)return"";
+  const covered=matchesOf(c.id).filter(activeM).map(m=>m.subject),miss=c.subjects.filter(s=>!covered.includes(s));
+  return`<div class="cd"><h3 style="margin-bottom:4px">${esc(c.student)} <span class="mu">${esc(c.grade)} · ${esc(c.mode.join("·"))}${c.region?" · "+esc(c.region):""}</span><span style="margin-left:auto">${tg(c.status)}</span></h3>
+  <div class="mu" style="margin-bottom:6px">학생 1명 : 과목별 선생님 ${matchesOf(c.id).filter(activeM).length}명</div>
+  ${ms.map(m=>{const t=T(m.tid);return`<div class="mr" data-a="open" data-k="match" data-id="${m.id}"><span class="sj">${chip(m.subject)}</span><span class="tn">${t?`<b>${esc(t.name)}</b> <span class="mu">${esc(t.univ.replace("의과대학",""))}</span>`:'<span class="mu">선생님 미정</span>'}${m.status==="시범과외 예정"?`<div class="mu">시범 ${dt(m.trial)}</div>`:m.status==="정규수업"?`<div class="mu">4주 ${won(m.fee)} · ${m.sessions}회</div>`:""}</span>${tg(m.status)}</div>`}).join("")}
+  ${miss.length&&f==="all"?`<div class="add" data-a="open" data-k="consult" data-id="${c.id}">+ ${esc(miss.join(", "))} 매칭 추가</div>`:""}</div>`}).join("");
+ return fbar("match",opts)+(list.trim()?`<div class="mb">${list}</div>`:`<div class="cd em">해당하는 매칭이 없습니다.</div>`);
+}
+
+function vLesson(){
+ const f=flt.lesson;
+ let ls=db.lesson.filter(l=>{const m=M(l.mid);if(!m)return false;const c=C(m.cid),t=T(m.tid);return hit(c.student,t?t.name:"",m.subject)});
+ if(f==="week")ls=ls.filter(l=>l.date>=addDays(TODAY,-3)&&l.date<=addDays(TODAY,7));
+ else if(f!=="all")ls=ls.filter(l=>l.status===f);
+ ls.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+ const g={};ls.forEach(l=>(g[l.date]=g[l.date]||[]).push(l));
+ const opts=[["week","이번 주",null],["all","전체",db.lesson.length]].concat(LS.map(s=>[s,s,db.lesson.filter(l=>l.status===s).length]));
+ return fbar("lesson",opts)+`<p class="mu" style="margin:-4px 0 14px">결석·취소·보강을 나누어 기록합니다. 수업은 매칭 상세에서 추가합니다. <span class="xs">사전 연락 기한·보강 가능 횟수 확정 필요</span></p>`+
+ (Object.keys(g).length?Object.keys(g).map(d=>`<div class="dg"><h4 class="${d===TODAY?"td":""}">${md(d)} (${wd(d)})${d===TODAY?" · 오늘":""}</h4>${g[d].map(l=>{const m=M(l.mid),c=C(m.cid),t=T(m.tid);return`<div class="ls"><b>${esc(l.time)}</b><div data-a="open" data-k="match" data-id="${m.id}" style="cursor:pointer;min-width:0">${chip(m.subject)} <b>${esc(c.student)}</b> <span class="mu">· ${esc(t?t.name:"")} 선생님${l.memo?" · "+esc(l.memo):""}</span></div><select data-a2="lstat" data-id="${l.id}">${LS.map(s=>`<option${s===l.status?" selected":""}>${s}</option>`).join("")}</select></div>`}).join("")}</div>`).join(""):`<div class="cd em">해당 기간에 수업이 없습니다.</div>`);
+}
+
+function vPay(){
+ const f=flt.pay;
+ let ps=db.pay.filter(p=>{const m=M(p.mid);if(!m)return false;const c=C(m.cid),t=T(m.tid);return hit(c.student,t?t.name:"",m.subject)});
+ if(f==="미결제")ps=ps.filter(p=>p.status==="미결제");
+ if(f==="정산대기")ps=ps.filter(p=>p.status==="결제완료"&&p.settle==="대기");
+ ps.sort((a,b)=>b.from.localeCompare(a.from));
+ const paid=db.pay.filter(p=>p.status==="결제완료").reduce((s,p)=>s+p.amount,0);
+ const unpaid=db.pay.filter(p=>p.status==="미결제").reduce((s,p)=>s+p.amount,0);
+ const unset=db.pay.filter(p=>p.status==="결제완료"&&p.settle==="대기").reduce((s,p)=>s+p.settleAmt,0);
+ return`<div class="kp"><div><b>${won(paid)}</b><span>결제 완료 누계</span></div><div><b>${won(unpaid)}</b><span>미결제</span></div><div><b>${won(unset)}</b><span>선생님 정산 대기</span></div><div><b>${won(paid-db.pay.filter(p=>p.status==="결제완료").reduce((s,p)=>s+p.settleAmt,0))}</b><span>MECA 수익(결제완료 기준)</span></div></div>`+
+ fbar("pay",[["all","전체",db.pay.length],["미결제","미결제",db.pay.filter(p=>p.status==="미결제").length],["정산대기","정산 대기",db.pay.filter(p=>p.status==="결제완료"&&p.settle==="대기").length]])+
+ `<p class="mu" style="margin:-4px 0 14px">결제는 매칭(학생×과목)별 4주 단위 회차로 관리합니다. <span class="xs">정산 비율·결제 수단·환불 기준 확정 필요</span></p>`+
+ `<div class="tw"><table><thead><tr><th>학생 · 과목</th><th>선생님</th><th>회차</th><th>기간</th><th>금액</th><th>결제</th><th>선생님 정산</th><th></th></tr></thead><tbody>${ps.length?ps.map(p=>{const m=M(p.mid),c=C(m.cid),t=T(m.tid);return`<tr data-a="open" data-k="match" data-id="${m.id}"><td><b>${esc(c.student)}</b> ${chip(m.subject)}</td><td>${esc(t?t.name:"-")}</td><td>${p.round}회차</td><td>${md(p.from)} ~ ${md(p.to)}</td><td><b>${won(p.amount)}</b></td><td>${tg(p.status)}${p.paidDate?`<div class="sub">${md(p.paidDate)}</div>`:""}</td><td>${won(p.settleAmt)}<div>${p.status==="결제완료"?tg(p.settle==="완료"?"완료":"대기",p.settle==="완료"?"정산 완료":"정산 대기"):'<span class="sub">결제 후 정산</span>'}</div></td><td style="text-align:right">${p.status==="미결제"?`<button class="btn s p" data-a="paid" data-id="${p.id}">결제 확인</button>`:p.settle==="대기"?`<button class="btn s" data-a="settle" data-id="${p.id}">정산 완료</button>`:""}</td></tr>`}).join(""):`<tr><td colspan="8" class="em">해당하는 결제 회차가 없습니다.</td></tr>`}</tbody></table></div>`;
+}
+
+/* ---------- drawers ---------- */
+const fld=(k,id,f,label,val,type,opts,w)=>{
+ const a=`data-a2="set" data-k="${k}" data-id="${id}" data-f="${f}"`;
+ let inp;
+ if(type==="select")inp=`<select ${a}>${opts.map(o=>`<option${o===val?" selected":""}>${esc(o)}</option>`).join("")}</select>`;
+ else if(type==="textarea")inp=`<textarea rows="2" ${a}>${esc(val)}</textarea>`;
+ else inp=`<input type="${type||"text"}" value="${esc(val)}" ${a}>`;
+ return`<label class="fd${w?" w":""}">${label}${inp}</label>`;
+};
+function head(title,sub,tag){return`<div class="dh"><div><h2>${title}</h2><div class="mu" style="margin-top:3px">${sub}</div>${tag?`<div style="margin-top:8px">${tag}</div>`:""}</div><button class="x" data-a="close">×</button></div>`}
+
+function dConsult(c){
+ const ms=matchesOf(c.id);
+ const pubT=db.teacher.filter(t=>!t.out&&t.stage>=5);
+ const covered=ms.filter(activeM).map(m=>m.subject);
+ const firstMiss=c.subjects.find(s=>!covered.includes(s))||c.subjects[0];
+ return head(`${esc(c.student)} <span class="mu" style="font-size:14px;font-weight:500">${esc(c.grade)}</span>`,`상담 신청 · 접수 ${esc(c.date)}`,tg(c.status))+`<div class="db">
+ <div class="sec"><div class="fr">${fld("consult",c.id,"status","진행 상태",c.status,"select",CS)}${fld("consult",c.id,"owner","담당 운영자",c.owner,"select",[""].concat(OPS))}</div></div>
+ <div class="sec"><h5>신청 내용</h5><dl class="kv">
+  <dt>학부모</dt><dd>${esc(c.parent)} · <b>${esc(c.phone)}</b></dd>
+  <dt>희망 과목</dt><dd>${c.subjects.map(s=>chip(s)).join("")}</dd>
+  <dt>수업 형태</dt><dd>${esc(c.mode.join(", "))}${c.region?` · 대면 지역 ${esc(c.region)}`:""}</dd>
+  <dt>희망 요일·시간</dt><dd>${esc(c.times)||"-"}</dd>
+  <dt>현재 성적</dt><dd>${esc(c.score)||"-"}</dd>
+  <dt>목표</dt><dd>${esc(c.goal)||"-"}</dd>
+  <dt>알게 된 경로</dt><dd>${esc(c.source)||"-"}</dd>
+  <dt>요청사항</dt><dd>${esc(c.req)||"-"}</dd>
+ </dl></div>
+ <div class="sec"><h5>과목별 매칭 · 학생 1명 : 선생님 여러 명</h5>
+  ${ms.length?ms.map(m=>{const t=T(m.tid);return`<div class="mini" data-a="open" data-k="match" data-id="${m.id}">${chip(m.subject)}<span class="sp">${t?`<b>${esc(t.name)}</b> 선생님`:'<span class="mu">선생님 미정</span>'}</span>${tg(m.status)}</div>`}).join(""):`<p class="mu" style="margin:0 0 8px">아직 매칭이 없습니다.</p>`}
+  <div class="box" style="margin-top:10px"><p><b>매칭 추가</b> <span class="mu">공개 중인 선생님만 표시됩니다.</span></p>
+   <div class="fr"><label class="fd">과목<select id="nmS">${SUBJ.map(s=>`<option${s===firstMiss?" selected":""}>${s}</option>`).join("")}</select></label>
+   <label class="fd">선생님<select id="nmT">${pubT.map(t=>`<option value="${t.id}">${esc(t.name)} · ${esc(t.subjects.join("/"))} · ${esc(t.pMode)}</option>`).join("")}</select></label></div>
+   <div class="acts"><button class="btn p" data-a="addMatch" data-id="${c.id}">매칭 제안 등록</button></div></div>
+ </div>
+ <div class="sec"><h5>상담 메모</h5><textarea class="memo" rows="4" data-a2="set" data-k="consult" data-id="${c.id}" data-f="memo" placeholder="통화 내용, 학부모 요청 등">${esc(c.memo)}</textarea></div>
+ </div>`;
+}
+
+function dTeacher(t){
+ const step=TS.map((s,i)=>`<div class="${t.stage>i||t.stage===5?"d":t.stage===i?"c":""}" data-n="${i+1}">${TSS[i]}</div>`).join("");
+ let act="";
+ if(t.out)act=`<div class="box warn"><p><b>${esc(t.out)}</b> 상태입니다. ${esc(t.memo)}</p><div class="acts"><button class="btn" data-a="tRestore" data-id="${t.id}">선발 절차로 복구</button></div></div>`;
+ else if(t.stage===0)act=`<div class="box"><p><b>1단계 · 재학증명서 확인</b><br>업로드된 재학증명서를 확인하고 인증 처리합니다. 파일은 비공개로 보관되며 운영자만 열람합니다.</p>
+  <div class="fileln">📄 ${esc(t.certFile)}<span class="mu">비공개</span></div>
+  <div class="acts"><button class="btn p" data-a="tNext" data-id="${t.id}">인증 완료</button><button class="btn r" data-a="tOut" data-o="보류" data-id="${t.id}">보류 (재제출 요청)</button></div></div>`;
+ else if(t.stage===1)act=`<div class="box"><p><b>2단계 · 검증수업</b><br>운영자 대상 10~20분 시범수업을 진행하고 결과를 기록합니다.</p>
+  <div class="fr">${fld("teacher",t.id,"demoDate","검증수업 일시",t.demoDate,"datetime-local")}${fld("teacher",t.id,"demoGrade","평가",t.demoGrade,"select",["","상","중","하"])}${fld("teacher",t.id,"demoNote","평가 메모",t.demoNote,"textarea",0,1)}</div>
+  <div class="acts"><button class="btn p" data-a="tNext" data-id="${t.id}">검증 통과 → 계약 단계</button><button class="btn r" data-a="tOut" data-o="탈락" data-id="${t.id}">탈락</button></div></div>`;
+ else if(t.stage===2)act=`<div class="box"><p><b>3단계 · 계약</b><br>계약을 체결하고 계약서를 보관합니다.</p>
+  <div class="fr">${fld("teacher",t.id,"contractDate","계약일",t.contractDate,"date")}<label class="fd">계약서 파일<input type="file" data-a2="file" data-id="${t.id}" accept=".pdf,.jpg,.png"></label></div>
+  ${t.contractFile?`<div class="fileln" style="margin-top:8px">📄 ${esc(t.contractFile)}<span class="mu">비공개</span></div>`:""}
+  <div class="acts"><button class="btn p" data-a="tNext" data-id="${t.id}">계약 완료 → 프로필 등록 안내</button></div></div>`;
+ else if(t.stage===3)act=`<div class="box"><p><b>4단계 · 상세 프로필 등록</b><br>인증·계약을 마친 선생님이 직접 입력하는 단계입니다. (오픈 시 선생님 전용 화면에서 입력, 시안에서는 아래에서 대신 입력)</p>
+  <div class="fr">${pf(t)}</div><div class="acts"><button class="btn p" data-a="tNext" data-id="${t.id}">프로필 제출됨 → 검토 대기</button></div></div>`;
+ else if(t.stage===4)act=`<div class="box"><p><b>5단계 · 프로필 검토·공개 승인</b><br>승인하면 사이트 ‘선생님 소개’에 노출됩니다. 공개 범위는 본인 동의 기준.</p>${preview(t)}
+  <div class="acts"><button class="btn p" data-a="tNext" data-id="${t.id}">공개 승인</button><button class="btn" data-a="tBack" data-id="${t.id}">수정 요청</button></div></div>`;
+ else act=`<div class="box" style="background:var(--okb);border-color:#bfe6cf"><p><b>사이트에 공개 중</b>입니다. 상담 신청 화면에서 매칭할 수 있습니다.</p>${preview(t)}<div class="acts"><button class="btn" data-a="tBack" data-id="${t.id}">비공개 전환</button></div></div>`;
+ const ms=db.match.filter(m=>m.tid===t.id);
+ return head(`${esc(t.name)} <span class="mu" style="font-size:14px;font-weight:500">선생님</span>`,`${esc(t.univ)} · ${esc(t.year)} · 지원 ${esc(t.date)}`,tg(tLabel(t)))+`<div class="db">
+ <div class="stp">${step}</div>
+ <div class="sec">${act}</div>
+ <div class="sec"><h5>기본 지원 정보</h5><dl class="kv"><dt>연락처</dt><dd><b>${esc(t.phone)}</b></dd><dt>지원 과목</dt><dd>${t.subjects.map(s=>chip(s)).join("")}</dd><dt>재학증명서</dt><dd>${esc(t.certFile)} ${t.stage>0?tg("완료","인증 완료"):""}</dd>
+ ${t.demoGrade?`<dt>검증수업</dt><dd>${dt(t.demoDate)} · 평가 <b>${esc(t.demoGrade)}</b><div class="mu">${esc(t.demoNote)}</div></dd>`:""}
+ ${t.contractDate?`<dt>계약</dt><dd>${esc(t.contractDate)} · ${esc(t.contractFile)}</dd>`:""}</dl></div>
+ ${t.stage>=4&&!t.out?`<div class="sec"><h5>상세 프로필 (수정)</h5><div class="fr">${pf(t)}</div></div>`:""}
+ ${ms.length?`<div class="sec"><h5>담당 매칭</h5>${ms.map(m=>{const c=C(m.cid);return`<div class="mini" data-a="open" data-k="match" data-id="${m.id}">${chip(m.subject)}<span class="sp"><b>${esc(c.student)}</b> ${esc(c.grade)}</span>${tg(m.status)}</div>`}).join("")}</div>`:""}
+ <div class="sec"><h5>운영 메모</h5><textarea class="memo" rows="3" data-a2="set" data-k="teacher" data-id="${t.id}" data-f="memo">${esc(t.memo)}</textarea></div>
+ </div>`;
+}
+function pf(t){return fld("teacher",t.id,"pMode","수업 형태",t.pMode,"select",["","대면","비대면","대면·비대면"])+fld("teacher",t.id,"pRegion","대면 가능 지역",t.pRegion)+fld("teacher",t.id,"pTime","수업 가능 요일·시간",t.pTime,0,0,1)+fld("teacher",t.id,"pCareer","이력",t.pCareer,"textarea",0,1)+fld("teacher",t.id,"pCurri","커리큘럼",t.pCurri,"textarea",0,1)+fld("teacher",t.id,"pColumn","칼럼",t.pColumn,0,0,1)}
+function preview(t){return`<div class="pv"><div class="ph">🩺</div><div class="pb"><h4>${esc(t.name)} 선생님</h4><div class="mu">${esc(t.univ)} ${esc(t.year)}</div><div style="margin-top:6px">${t.subjects.map(s=>chip(s)).join("")}${t.pMode?chip(t.pMode):""}</div>${t.pCareer?`<div class="mu" style="margin-top:6px">${esc(t.pCareer)}</div>`:""}</div></div>`}
+
+function dMatch(m){
+ const c=C(m.cid),t=T(m.tid),i=MS.indexOf(m.status);
+ const step=MS.map((s,k)=>`<div class="${k<i||m.status==="종료"&&k<4?"d":k===i?"c":""}" data-n="${k+1}">${s.replace("시범과외 ","시범 ")}</div>`).join("");
+ const pubT=db.teacher.filter(x=>!x.out&&x.stage>=5);
+ let act="";
+ if(m.status==="매칭 제안")act=`<div class="box"><p><b>시범과외 일정 확정</b><br>학부모·선생님과 일정을 조율한 뒤 입력하세요. 시범과외 1회는 유료입니다. <span class="xs">시범과외 비용 확정 필요</span></p><div class="fr">${fld("match",m.id,"trial","시범과외 일시",m.trial,"datetime-local",0,1)}</div><div class="acts"><button class="btn p" data-a="mNext" data-id="${m.id}">시범과외 예정으로 변경</button><button class="btn r" data-a="mEnd" data-id="${m.id}">매칭 취소</button></div></div>`;
+ else if(m.status==="시범과외 예정")act=`<div class="box"><p><b>시범과외 ${dt(m.trial)}</b><br>수업 후 결과를 처리하세요.</p><div class="acts"><button class="btn p" data-a="mNext" data-id="${m.id}">시범과외 완료</button><button class="btn r" data-a="mEnd" data-id="${m.id}">취소</button></div></div>`;
+ else if(m.status==="시범과외 완료")act=`<div class="box"><p><b>정규 전환 여부</b><br>정규 전환 시 1회차(4주) 결제가 생성됩니다. 맞지 않으면 같은 과목으로 재매칭합니다. <span class="xs">재매칭 횟수·비용 정책 확정 필요</span></p><div class="fr">${fld("match",m.id,"fee","4주 수업료(원)",m.fee,"number")}${fld("match",m.id,"sessions","4주 수업 횟수",m.sessions,"number")}</div><div class="acts"><button class="btn p" data-a="mNext" data-id="${m.id}">정규수업 전환</button><button class="btn" data-a="mRe" data-id="${m.id}">재매칭</button></div></div>`;
+ else if(m.status==="정규수업")act=`<div class="box" style="background:var(--okb);border-color:#bfe6cf"><p><b>정규수업 진행 중</b> · 4주 ${won(m.fee)} · ${m.sessions}회</p><div class="acts"><button class="btn p" data-a="mRound" data-id="${m.id}">다음 회차 결제 생성</button><button class="btn" data-a="mRe" data-id="${m.id}">선생님 변경(재매칭)</button><button class="btn r" data-a="mEnd" data-id="${m.id}">수업 종료</button></div></div>`;
+ else act=`<div class="box warn"><p>종료된 매칭입니다. ${esc(m.memo)}</p></div>`;
+ const ps=db.pay.filter(p=>p.mid===m.id).sort((a,b)=>a.round-b.round);
+ const ls=db.lesson.filter(l=>l.mid===m.id).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+ return head(`${esc(c.student)} · ${esc(m.subject)}`,`${t?esc(t.name)+" 선생님":"선생님 미정"} · ${esc(c.grade)} · ${esc(c.mode.join("·"))}`,tg(m.status))+`<div class="db">
+ <div class="stp">${step}</div>
+ <div class="sec">${act}</div>
+ <div class="sec"><h5>매칭 정보</h5><div class="fr">
+  <label class="fd">선생님<select data-a2="set" data-k="match" data-id="${m.id}" data-f="tid" ${m.status!=="매칭 제안"?"disabled":""}>${pubT.map(x=>`<option value="${x.id}"${x.id===m.tid?" selected":""}>${esc(x.name)} · ${esc(x.subjects.join("/"))}</option>`).join("")}</select></label>
+  ${m.status!=="시범과외 완료"?fld("match",m.id,"fee","4주 수업료(원)",m.fee,"number"):""}
+  ${fld("match",m.id,"memo","메모",m.memo,"textarea",0,1)}</div>
+  <div class="acts"><button class="btn s" data-a="open" data-k="consult" data-id="${c.id}">상담 신청서 보기</button>${t?`<button class="btn s" data-a="open" data-k="teacher" data-id="${t.id}">선생님 정보 보기</button>`:""}</div></div>
+ <div class="sec"><h5>4주 단위 결제 회차</h5>${ps.length?ps.map(p=>`<div class="mini" style="cursor:default"><b>${p.round}회차</b><span class="sp mu">${md(p.from)} ~ ${md(p.to)} · ${won(p.amount)}</span>${p.status==="미결제"?`<button class="btn s p" data-a="paid" data-id="${p.id}">결제 확인</button>`:tg("결제완료")}${p.status==="결제완료"?(p.settle==="대기"?`<button class="btn s" data-a="settle" data-id="${p.id}">정산</button>`:tg("완료","정산 완료")):""}</div>`).join(""):`<p class="mu" style="margin:0">정규수업 전환 시 생성됩니다.</p>`}</div>
+ <div class="sec"><h5>수업 기록</h5>
+  ${["시범과외 예정","정규수업"].includes(m.status)?`<div class="fr" style="margin-bottom:10px"><label class="fd">날짜<input type="date" id="nlD" value="${TODAY}"></label><label class="fd">시간<input type="time" id="nlT" value="${(m.trial||"T19:00").slice(11,16)||"19:00"}"></label></div><div class="acts" style="margin:0 0 12px"><button class="btn s" data-a="addLesson" data-id="${m.id}">+ 수업 추가</button></div>`:""}
+  ${ls.length?ls.map(l=>`<div class="mini" style="cursor:default"><span class="mu">${md(l.date)}(${wd(l.date)}) ${esc(l.time)}</span><span class="sp">${esc(l.memo)}</span><select data-a2="lstat" data-id="${l.id}" style="border:1.5px solid var(--bd);border-radius:8px;padding:4px 6px">${LS.map(s=>`<option${s===l.status?" selected":""}>${s}</option>`).join("")}</select></div>`).join(""):`<p class="mu" style="margin:0">수업 기록이 없습니다.</p>`}</div>
+ </div>`;
+}
+
+function dNew(kind){
+ if(kind==="consult")return head("상담 직접 등록","전화·카카오톡으로 받은 상담을 등록합니다")+`<div class="db"><div class="fr">
+  <label class="fd">학부모 성함<input id="n1"></label><label class="fd">학부모 연락처<input id="n2" placeholder="010-0000-0000"></label>
+  <label class="fd">학생 이름<input id="n3"></label><label class="fd">학년<select id="n4">${GRADES.map(g=>`<option>${g}</option>`).join("")}</select></label>
+  <label class="fd w">희망 과목 (쉼표로 구분)<input id="n5" placeholder="수학, 과학탐구"></label>
+  <label class="fd">수업 형태<select id="n6"><option>비대면</option><option>대면</option><option>대면·비대면</option></select></label><label class="fd">대면 희망 지역<input id="n7"></label>
+  <label class="fd w">희망 요일·시간<input id="n8"></label></div>
+  <div class="acts"><button class="btn p" data-a="saveNew" data-k="consult">등록</button></div></div>`;
+ return head("지원자 직접 등록","사이트 외 경로로 받은 지원서를 등록합니다")+`<div class="db"><div class="fr">
+  <label class="fd">이름<input id="n1"></label><label class="fd">연락처<input id="n2"></label>
+  <label class="fd">대학교<input id="n3" placeholder="○○대학교 의과대학"></label><label class="fd">학년<select id="n4">${["예과 1학년","예과 2학년","본과 1학년","본과 2학년","본과 3학년","본과 4학년"].map(g=>`<option>${g}</option>`).join("")}</select></label>
+  <label class="fd w">지원 과목 (쉼표로 구분)<input id="n5"></label>
+  <label class="fd w">재학증명서<input type="file" id="n6"></label></div>
+  <div class="acts"><button class="btn p" data-a="saveNew" data-k="teacher">등록</button></div></div>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+ const counts={consult:db.consult.filter(c=>c.status==="신규").length,teacher:db.teacher.filter(t=>!t.out&&[0,1,2,4].includes(t.stage)).length,match:db.match.filter(m=>["매칭 제안","시범과외 완료"].includes(m.status)).length,pay:db.pay.filter(p=>p.status==="미결제").length,dash:0,lesson:0};
+ $("#nv").innerHTML=NAV.map(([k,l,i])=>`<button class="${k===view?"on":""}" data-a="nav" data-v="${k}"><span>${i}</span>${l}<span class="ct${counts[k]?"":" z"}">${counts[k]}</span></button>`).join("");
+ $("#ttl").textContent=NAV.find(n=>n[0]===view)[1];
+ $("#q").style.visibility=view==="dash"?"hidden":"visible";
+ $("#view").innerHTML={dash:vDash,consult:vConsult,teacher:vTeacher,match:vMatch,lesson:vLesson,pay:vPay}[view]();
+ if(cur)renderDr();
+}
+function renderDr(){
+ let h="";
+ if(cur.k==="new")h=dNew(cur.id);
+ else{const r=(cur.k==="consult"?C:cur.k==="teacher"?T:M)(cur.id);if(!r){closeDr();return}h={consult:dConsult,teacher:dTeacher,match:dMatch}[cur.k](r)}
+ const sc=$(".db")?$(".db").scrollTop:0,same=$("#drb").dataset.cur===cur.k+cur.id;
+ $("#drb").innerHTML=h;$("#drb").dataset.cur=cur.k+cur.id;
+ if(same&&$(".db"))$(".db").scrollTop=sc;
+ document.body.classList.add("do");
+}
+function openDr(k,id){cur={k,id};renderDr()}
+function closeDr(){cur=null;document.body.classList.remove("do")}
+const commit=msg=>{save();render();if(msg)toast(msg)};
+
+/* ---------- actions ---------- */
+document.addEventListener("click",e=>{
+ const el=e.target.closest("[data-a]");if(!el)return;
+ const a=el.dataset.a,id=el.dataset.id;
+ if(el.tagName==="TR"&&e.target.closest("button"))return;
+ switch(a){
+  case"nav":view=el.dataset.v;closeDr();$("#q").value="";render();window.scrollTo(0,0);break;
+  case"go":view=el.dataset.v;flt[view]=el.dataset.f;closeDr();render();break;
+  case"flt":flt[el.dataset.key]=el.dataset.f;render();break;
+  case"open":e.stopPropagation();openDr(el.dataset.k,id);break;
+  case"close":closeDr();break;
+  case"reset":if(confirm("시안 데이터를 처음 상태로 되돌릴까요?")){db=JSON.parse(JSON.stringify(SEED));closeDr();commit("초기화했습니다")}break;
+  case"newConsult":openDr("new","consult");break;
+  case"newTeacher":openDr("new","teacher");break;
+  case"saveNew":{
+   const v=n=>($("#n"+n).value||"").trim();
+   if(!v(1)||!v(2)||(el.dataset.k==="consult"&&!v(3))){toast("필수 항목을 입력하세요");break}
+   const subs=v(5).split(/[,，\s]+/).filter(Boolean);
+   if(el.dataset.k==="consult"){const c={id:uid("c"),date:TODAY,parent:v(1),phone:v(2),student:v(3),grade:v(4),subjects:subs.length?subs:["종합 상담"],mode:v(6).split("·"),region:v(7),times:v(8),score:"",goal:"",source:"직접 등록",req:"",status:"신규",owner:me,memo:""};db.consult.push(c);cur={k:"consult",id:c.id}}
+   else{const f=$("#n6").files[0];const t={id:uid("t"),date:TODAY,name:v(1),phone:v(2),univ:v(3),year:v(4),subjects:subs,stage:0,out:"",certFile:f?f.name:"(미제출)",demoDate:"",demoGrade:"",demoNote:"",contractDate:"",contractFile:"",pMode:"",pRegion:"",pTime:"",pCareer:"",pCurri:"",pColumn:"",memo:""};db.teacher.push(t);cur={k:"teacher",id:t.id}}
+   commit("등록했습니다");break}
+  case"addMatch":{
+   const c=C(id),s=$("#nmS").value,tid=$("#nmT").value;if(!tid){toast("공개 중인 선생님이 없습니다");break}
+   if(matchesOf(id).some(m=>m.subject===s&&activeM(m))&&!confirm(s+" 과목에 진행 중인 매칭이 있습니다. 추가할까요?"))break;
+   db.match.push({id:uid("m"),cid:id,subject:s,tid,status:"매칭 제안",trial:"",fee:0,sessions:8,memo:""});
+   if(["신규","연락 완료"].includes(c.status))c.status="매칭 진행";
+   if(!c.owner)c.owner=me;
+   commit(`${s} 매칭 제안을 등록했습니다`);break}
+  case"tNext":{const t=T(id);
+   if(t.stage===1&&!t.demoGrade){toast("검증수업 평가를 입력하세요");break}
+   if(t.stage===2&&!t.contractDate){toast("계약일을 입력하세요");break}
+   t.stage=Math.min(5,t.stage+1);commit(t.stage===5?`${t.name} 선생님이 사이트에 공개됩니다`:`${TS[t.stage]} 단계로 이동했습니다`);break}
+  case"tBack":{const t=T(id);t.stage=t.stage===5?4:3;commit(t.stage===4?"비공개로 전환했습니다":"수정 요청 — 프로필 등록 단계로 돌렸습니다");break}
+  case"tOut":{const t=T(id);t.out=el.dataset.o;commit(`${t.name} — ${t.out} 처리`);break}
+  case"tRestore":T(id).out="";commit("선발 절차로 복구했습니다");break;
+  case"mNext":{const m=M(id),c=C(m.cid);
+   if(m.status==="매칭 제안"){if(!m.trial){toast("시범과외 일시를 입력하세요");break}m.status="시범과외 예정";db.lesson.push({id:uid("l"),mid:m.id,date:m.trial.slice(0,10),time:m.trial.slice(11,16),status:"예정",memo:"시범과외"})}
+   else if(m.status==="시범과외 예정"){m.status="시범과외 완료";const l=db.lesson.find(x=>x.mid===m.id&&x.memo==="시범과외");if(l)l.status="완료"}
+   else if(m.status==="시범과외 완료"){if(!(+m.fee>0)){toast("4주 수업료를 입력하세요");break}m.status="정규수업";newRound(m);c.status="수업 중"}
+   commit("상태를 변경했습니다");break}
+  case"mRound":newRound(M(id));commit("다음 회차 결제를 생성했습니다");break;
+  case"mRe":{const m=M(id);m.status="종료";m.memo=(m.memo?m.memo+" / ":"")+"재매칭으로 종료";const n={id:uid("m"),cid:m.cid,subject:m.subject,tid:"",status:"매칭 제안",trial:"",fee:m.fee,sessions:m.sessions,memo:"재매칭"};const alt=db.teacher.find(x=>!x.out&&x.stage>=5&&x.id!==m.tid&&x.subjects.includes(m.subject))||db.teacher.find(x=>!x.out&&x.stage>=5&&x.id!==m.tid);n.tid=alt?alt.id:m.tid;db.match.push(n);cur={k:"match",id:n.id};commit("재매칭 — 새 매칭 제안을 만들었습니다");break}
+  case"mEnd":{if(!confirm("이 매칭을 종료할까요?"))break;const m=M(id);m.status="종료";commit("종료했습니다");break}
+  case"paid":{const p=db.pay.find(x=>x.id===id);p.status="결제완료";p.paidDate=TODAY;commit(`${p.round}회차 결제 확인`);break}
+  case"settle":{const p=db.pay.find(x=>x.id===id);p.settle="완료";commit("정산 완료 처리");break}
+  case"addLesson":{const d=$("#nlD").value,t=$("#nlT").value;if(!d){toast("날짜를 입력하세요");break}db.lesson.push({id:uid("l"),mid:id,date:d,time:t||"19:00",status:"예정",memo:""});commit("수업을 추가했습니다");break}
+ }
+});
+function newRound(m){
+ const ps=db.pay.filter(p=>p.mid===m.id);
+ const last=ps.sort((a,b)=>b.round-a.round)[0];
+ const from=last?addDays(last.to,1):(m.trial?addDays(m.trial.slice(0,10),1):TODAY);
+ db.pay.push({id:uid("p"),mid:m.id,round:last?last.round+1:1,from,to:addDays(from,27),amount:+m.fee||0,status:"미결제",paidDate:"",settleAmt:Math.round((+m.fee||0)*0.8),settle:"대기"});
+}
+document.addEventListener("change",e=>{
+ const el=e.target,a=el.dataset.a2;if(!a)return;
+ if(a==="set"){const r=(el.dataset.k==="consult"?C:el.dataset.k==="teacher"?T:M)(el.dataset.id);let v=el.value;if(el.type==="number")v=+v||0;r[el.dataset.f]=v;save();
+  if(el.tagName==="SELECT")commit();
+  else{$("#view").innerHTML={dash:vDash,consult:vConsult,teacher:vTeacher,match:vMatch,lesson:vLesson,pay:vPay}[view]();}}
+ if(a==="lstat"){db.lesson.find(l=>l.id===el.dataset.id).status=el.value;commit("수업 상태: "+el.value)}
+ if(a==="file"){const t=T(el.dataset.id);if(el.files[0]){t.contractFile=el.files[0].name;commit("계약서를 첨부했습니다")}}
+});
+$("#q").addEventListener("input",()=>{$("#view").innerHTML={dash:vDash,consult:vConsult,teacher:vTeacher,match:vMatch,lesson:vLesson,pay:vPay}[view]()});
+$("#me").innerHTML=OPS.map(o=>`<option${o===me?" selected":""}>${o}</option>`).join("");
+$("#me").addEventListener("change",e=>{me=e.target.value;try{localStorage.setItem(KEY+"-me",me)}catch(x){}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDr()});
+render();
+</script>
+</body>
+</html>
